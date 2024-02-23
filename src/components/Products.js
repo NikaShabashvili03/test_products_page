@@ -16,7 +16,6 @@ export default function Products() {
   const [filterType, setFilterType] = useState('brand');
 
   const dispatch = useDispatch();
-  const [filteredProducts, setFilteredProducts] = useState();
 
   const { products } = useSelector(state => state.products);
   const { fields } = useSelector(state => state.fields);
