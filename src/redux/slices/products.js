@@ -1,14 +1,12 @@
 import axios from '../../libs/axios'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-export const fetchProducts = createAsyncThunk('products/fetchProducts', async ({ isFiltered, type, value }) => {
-    if(isFiltered === true){
-        const data = await axios.post('/', { action: 'filter', params: { [type] : value },},).then(async (res) => {
+export const fetchProducts = createAsyncThunk('products/fetchProducts', async ({ filter, type, value, limit }) => {
+    if(filter){
+        const data = await axios.post('/', { action: 'filter', params: { [type]: value  } }).then(async (res) => {
             const uniqueIds = Array.from(new Set(res.data.result));
-
             const { data } =  await axios.post('/', { action: 'get_items', params: { ids: uniqueIds } });
     
-
             return {
                 items: Array.from({ length: Math.ceil(uniqueIds.length / 50) }, (_, index) => {
                     const start = index * 50;
@@ -17,25 +15,23 @@ export const fetchProducts = createAsyncThunk('products/fetchProducts', async ({
                 maxPage: Math.ceil(uniqueIds.length / 50)
             }
         });
-
-
         return data
     }
-
-    const data = await axios.post('/', { action: 'get_ids', params: { offset: 0 } }).then(async (res) => {
-        const uniqueIds = Array.from(new Set(res.data.result));
-        const { data } =  await axios.post('/', { action: 'get_items', params: { ids: uniqueIds } });
+    else{
+        const data = await axios.post('/', { action: 'get_ids', params: { offset: 0, limit: limit } }).then(async (res) => {
+            const uniqueIds = Array.from(new Set(res.data.result));
+            const { data } =  await axios.post('/', { action: 'get_items', params: { ids: uniqueIds } });
     
-
-        return {
-            items: Array.from({ length: Math.ceil(uniqueIds.length / 50) }, (_, index) => {
-                const start = index * 50;
-                return data.result.slice(start, start + 50);
-            }),
-            maxPage: Math.ceil(uniqueIds.length / 50)
-        }
-    });
-    return data
+            return {
+                items: Array.from({ length: Math.ceil(uniqueIds.length / 50) }, (_, index) => {
+                    const start = index * 50;
+                    return data.result.slice(start, start + 50);
+                }),
+                maxPage: Math.ceil(uniqueIds.length / 50)
+            }
+        });
+        return data
+    }
 })
 
 const initialState = {
@@ -51,21 +47,11 @@ const productsSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: builder => {
-        builder.addCase(fetchProducts.pending, (state) => {
-            state.products.items = [];
-            state.products.maxPage = 0;
-            state.products.status = 'loading';
-        });
         builder.addCase(fetchProducts.fulfilled, (state, action) => {
             state.products.items = action.payload.items;
             state.products.maxPage = action.payload.maxPage;
             state.products.status = 'loaded';
         });
-        builder.addCase(fetchProducts.rejected, (state) => {
-            state.products.items = [];
-            state.products.maxPage = 0;
-            state.products.status = 'error';
-        })
     }
 })
 

@@ -10,7 +10,7 @@ export default function Product({ id, product, price, brand}) {
             </div>
         </div>
         <div className="p-4 space-y-4 sm:px-8">
-            <div className="w-full h-4 rounded">Price: {price}</div>
+            <div className="w-full h-4 rounded">Price: {price}$</div>
             <div className="w-3/4 h-4 rounded ">Brand: {brand || '-'}</div>
         </div>
     </div>
