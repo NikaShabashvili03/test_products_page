@@ -23,7 +23,6 @@ export default function Products() {
   const isProductsLoading = products.status === 'loading';
 
   useEffect(() => {
-     dispatch(fetchFields({ field: 'brand', limit: (currentPage+5)*50 }))
      if(!isFiltered){
       dispatch(fetchProducts({ filter: false, offset: 0, limit: (currentPage+5)*50 }))
      }
@@ -31,6 +30,11 @@ export default function Products() {
       dispatch(fetchProducts({ filter: true, type: filterType, value: filterValue, offset: 0, limit: (currentPage+5)*50 }))
      }
   }, [currentPage])
+
+
+  useEffect(() => {
+    dispatch(fetchFields({ field: 'brand' }))
+  }, [])
 
   return (
     <div className='flex h-dvh'>

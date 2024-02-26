@@ -2,7 +2,7 @@ import axios from '../../libs/axios'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 export const fetchFields = createAsyncThunk('fields/fetchFields', async ({ field }) => {
-    const { data } = await axios.post('/', { action: 'get_fields', params: { field: field, offset: 0 } });
+    const { data } = await axios.post('/', { action: 'get_fields', params: { field: field } });
 
     return data.result.filter((item) => item !== null)
 })
